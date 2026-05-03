@@ -17,7 +17,19 @@ java --version
 
 ## Executando o aplicativo em modo de desenvolvimento
 
-Você pode executar seu aplicativo no modo de desenvolvimento, que permite a codificação em tempo real, usando:
+Primeiro é necessário criar o arquivo ".env":
+
+```shell script
+cp .env.example .env
+```
+
+Agora rode o docker para subir os serviços do postgres e keycloak:
+
+```shell script
+docker-compose up -d
+```
+
+Execute a aplicação no modo de desenvolvimento, que permite a codificação em tempo real, usando:
 
 ```shell script
 ./mvnw quarkus:dev
