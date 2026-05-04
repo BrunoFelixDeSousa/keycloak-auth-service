@@ -7,7 +7,7 @@ package io.github.brunofelix.domain.model;
  */
 public record AuthCredentials(String username, String password) {
     public AuthCredentials {
-        if (username == null || username.isBlank()) throw new IllegalArgumentException("Username cannot be null or blank");
-        if (password == null || password.isBlank()) throw new IllegalArgumentException("Password cannot be null or blank");
+        if (username == null || username.isBlank()) throw new IllegalArgumentException("Username obrigatório");
+        if (password == null || password.isBlank()) throw new IllegalArgumentException("Password obrigatório");
     }
 }
