@@ -52,11 +52,17 @@
             <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- TEST: AssertJ para assertions fluentes e leg�veis -->
+        <!-- TEST: AssertJ para assertions fluentes e legíveis -->
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>3.27.7</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- TEST: Mockito para criação de mocks e verificação de comportamento -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit-mockito</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
