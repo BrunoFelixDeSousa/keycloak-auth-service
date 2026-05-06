@@ -1,4 +1,4 @@
-package io.github.brunofelix.adapter.outbound;
+package io.github.brunofelix.adapter.outbound.keycloak;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

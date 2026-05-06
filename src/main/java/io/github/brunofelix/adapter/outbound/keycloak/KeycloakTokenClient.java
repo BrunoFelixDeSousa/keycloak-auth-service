@@ -1,4 +1,4 @@
-package io.github.brunofelix.adapter.outbound;
+package io.github.brunofelix.adapter.outbound.keycloak;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;

@@ -1,4 +1,4 @@
-package io.github.brunofelix.adapter.outbound;
+package io.github.brunofelix.adapter.outbound.keycloak;
 
 import io.github.brunofelix.domain.exception.AuthenticationException;
 import io.github.brunofelix.domain.model.AuthCredentials;
