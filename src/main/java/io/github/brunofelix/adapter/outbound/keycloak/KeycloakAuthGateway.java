@@ -81,8 +81,6 @@ public class KeycloakAuthGateway implements AuthPort {
             LOGGER.info("[KeycloakAuthGateway:logout] Logout realizado com sucesso");
         } catch (WebApplicationException ex) {
             LOGGER.warn("[KeycloakAuthGateway:logout] Falha ao revogar token. Status: {}", ex.getResponse().getStatus());
-            throw new AuthenticationException("Erro ao revogar token");
-
         }
     }
 
@@ -93,7 +91,7 @@ public class KeycloakAuthGateway implements AuthPort {
         } catch (WebApplicationException ex) {
             int status = ex.getResponse().getStatus();
             LOGGER.warn("[KeycloakAuthGateway:fetchToken] Falha na autenticao. subject={}, status={}", subject, status);
-            throw new AuthenticationException("Credenciais invlidas ou token expirado");
+            throw new AuthenticationException("Credenciais inválidas ou token expirado");
         }
     }
 }
