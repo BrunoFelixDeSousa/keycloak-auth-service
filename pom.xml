@@ -16,6 +16,7 @@
         <quarkus.platform.version>3.35.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
+        <spotless.version>2.46.1</spotless.version>
     </properties>
 
     <dependencyManagement>
@@ -122,6 +123,47 @@
                         <maven.home>${maven.home}</maven.home>
                     </systemPropertyVariables>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <!-- Arquivos a serem formatados -->
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+
+                        <googleJavaFormat /> <!-- Configuração do Google Java Format -->
+
+                        <cleanthat />  <!-- Configuração do CleanThat - refatoração automática -->
+
+                        <importOrder /> <!-- Import Order -->
+
+                        <removeUnusedImports /> <!-- Remove imports não utilizados -->
+
+                        <trimTrailingWhitespace /> <!-- Formatação adicional -->
+
+                        <formatAnnotations /> <!-- Garante a formatação de annotations -->
+
+                        <endWithNewline /> <!-- Garante que o arquivo termine com uma nova linha -->
+
+                        <!-- Cabeçalho de licença  -->
+                        <!-- <licenseHeader> -->
+                        <!-- <content>/* (C)$YEAR */</content>  or <file>${project.basedir}/license-header</file> -->
+                        <!-- </licenseHeader> -->
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

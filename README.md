@@ -35,7 +35,26 @@ Execute a aplicação no modo de desenvolvimento, que permite a codificação em
 ./mvnw quarkus:dev
 ```
 
+A Aplicação está rodando em: <http://localhost:8081/>
+
 > **_NOTA:_** O Quarkus vem com uma Dev UI, que está disponível apenas no modo de desenvolvimento em <http://localhost:8080/q/dev/>.
+
+
+## Spotless para padronização de estilo de codificação
+Exemplo de uso:
+
+```shell script
+user@machine repo % mvn spotless:check
+[ERROR]  > The following files had format violations:
+[ERROR]  src\main\java\com\diffplug\gradle\spotless\FormatExtension.java
+[ERROR]    -\t\t····if·(targets.length·==·0)·{
+[ERROR]    +\t\tif·(targets.length·==·0)·{
+[ERROR]  Run 'mvn spotless:apply' to fix these violations.
+user@machine repo % mvn spotless:apply
+[INFO] BUILD SUCCESS
+user@machine repo % mvn spotless:check
+[INFO] BUILD SUCCESS
+```
 
 ## Empacotamento e execução da aplicação
 
