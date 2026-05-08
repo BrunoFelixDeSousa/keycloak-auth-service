@@ -10,18 +10,19 @@ import org.slf4j.LoggerFactory;
 @ApplicationScoped
 public class LoginUseCase {
 
-    private final AuthPort authPort;
+  private final AuthPort authPort;
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(LoginUseCase.class);
-    
-    public LoginUseCase(AuthPort authPort) {
-        this.authPort = authPort;
-    }
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoginUseCase.class);
 
-    public TokenResponse execute(AuthCredentials credentials) {
-        LOGGER.info("[LoginUseCase:execute] Iniciando login para usuário: {}", credentials.username());
-        var token = authPort.login(credentials);
-        LOGGER.info("[LoginUseCase:execute] Login concluído com sucesso para: {}", credentials.username());
-        return token;
-    }
+  public LoginUseCase(AuthPort authPort) {
+    this.authPort = authPort;
+  }
+
+  public TokenResponse execute(AuthCredentials credentials) {
+    LOGGER.info("[LoginUseCase:execute] Iniciando login para usuário: {}", credentials.username());
+    var token = authPort.login(credentials);
+    LOGGER.info(
+        "[LoginUseCase:execute] Login concluído com sucesso para: {}", credentials.username());
+    return token;
+  }
 }
