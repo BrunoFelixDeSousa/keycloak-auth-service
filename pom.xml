@@ -136,7 +136,10 @@
                             <include>src/test/java/**/*.java</include>
                         </includes>
 
-                        <googleJavaFormat /> <!-- Configuração do Google Java Format -->
+                        <googleJavaFormat>
+                            <version>1.27.0</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat> <!-- Configuração do Google Java Format -->
 
                         <cleanthat />  <!-- Configuração do CleanThat - refatoração automática -->
 
