@@ -91,13 +91,133 @@ Ou, se você não tiver o GraalVM instalado, você pode executar a construção 
 ./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
-Você pode então executar seu executável nativo com: `./target/keycloak-auth-service-1.0.0-SNAPSHOT-runner`
+# Diagramas
 
-Se você quiser aprender mais sobre a construção de executáveis nativos, consulte <https://quarkus.io/guides/maven-tooling>.
+## Arquitetura geral (Hexagonal)
 
-## Guias Relacionados
+```mermaid
+flowchart LR
+    Client[Cliente HTTP]
+    AuthResource[adapter/inbound/rest/AuthResource]
+    LoginUC[application/usecase/LoginUseCase]
+    RefreshUC[application/usecase/RefreshTokenUseCase]
+    LogoutUC[application/usecase/LogoutUseCase]
+    AuthPort[domain/port/out/AuthPort]
+    Gateway[adapter/outbound/keycloack/KeycloakAuthGateway]
+    TokenClient[adapter/outbound/keycloack/KeycloakTokenClient]
+    Keycloak[(Keycloak Server)]
+    Mapper[config/AuthExceptionMapper]
 
-- REST ([guide](https://quarkus.io/guides/rest)): Uma implementação Jakarta REST utilizando processamento em tempo de construção e Vert.x. Esta extensão não é compatível com a extensão quarkus-resteasy, ou qualquer uma das extensões que dependem dela.
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Suporte à serialização Jackson para Quarkus REST. Esta extensão não é compatível com a extensão quarkus-resteasy, ou qualquer uma das extensões que dependem dela.
-- Smallrye Health ([guide](https://quarkus.io/guides/smallrye-health)): Permite que os aplicativos forneçam informações sobre seu estado para visualizadores externos, o que geralmente é útil em ambientes de nuvem, onde os processos automatizados precisam determinar se o aplicativo deve ser descartado ou reiniciado.
+    Client --> AuthResource
+    AuthResource --> LoginUC
+    AuthResource --> RefreshUC
+    AuthResource --> LogoutUC
+
+    LoginUC --> AuthPort
+    RefreshUC --> AuthPort
+    LogoutUC --> AuthPort
+
+    AuthPort --> Gateway
+    Gateway --> TokenClient
+    TokenClient --> Keycloak
+
+    Gateway -. lança AuthenticationException .-> Mapper
+    Mapper -. HTTP 401 .-> Client
+```
+
+---
+
+## Sequência - Login (`POST /auth/login`)
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant R as AuthResource
+    participant U as LoginUseCase
+    participant P as AuthPort
+    participant G as KeycloakAuthGateway
+    participant K as KeycloakTokenClient
+    participant KC as Keycloak
+
+    C->>R: POST /auth/login {username,password}
+    R->>U: execute(AuthCredentials)
+    U->>P: login(credentials)
+    P->>G: login(credentials)
+    G->>K: token(realm, form grant_type=password)
+    K->>KC: POST /realms/{realm}/protocol/openid-connect/token
+    KC-->>K: access_token, refresh_token, expires_in, token_type
+    K-->>G: KeycloakTokenResponse
+    G-->>U: TokenResponse
+    U-->>R: TokenResponse
+    R-->>C: 200 OK + TokenResponseDto
+```
+
+---
+
+## Sequência - Refresh (`POST /auth/refresh`)
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant R as AuthResource
+    participant U as RefreshTokenUseCase
+    participant P as AuthPort
+    participant G as KeycloakAuthGateway
+    participant K as KeycloakTokenClient
+    participant KC as Keycloak
+
+    C->>R: POST /auth/refresh {refreshToken}
+    R->>U: execute(refreshToken)
+    U->>P: refresh(refreshToken)
+    P->>G: refresh(refreshToken)
+    G->>K: token(realm, form grant_type=refresh_token)
+    K->>KC: POST /token
+    KC-->>K: novo access_token/refresh_token
+    K-->>G: KeycloakTokenResponse
+    G-->>U: TokenResponse
+    U-->>R: TokenResponse
+    R-->>C: 200 OK + TokenResponseDto
+```
+
+---
+
+## Sequência - Logout (`POST /auth/logout`)
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant R as AuthResource
+    participant U as LogoutUseCase
+    participant P as AuthPort
+    participant G as KeycloakAuthGateway
+    participant K as KeycloakTokenClient
+    participant KC as Keycloak
+
+    C->>R: POST /auth/logout {refreshToken}
+    R->>U: execute(refreshToken)
+    U->>P: logout(refreshToken)
+    P->>G: logout(refreshToken)
+    G->>K: logout(realm, form)
+    K->>KC: POST /logout
+    KC-->>K: 204/200
+    K-->>G: ok
+    G-->>U: void
+    U-->>R: void
+    R-->>C: 204 No Content
+```
+
+---
+
+## Fluxo de erro de autenticação (401)
+
+```mermaid
+flowchart TD
+    A[AuthResource chama UseCase] --> B[KeycloakAuthGateway chama Keycloak]
+    B --> C{Keycloak retornou erro HTTP?}
+    C -- Não --> D[Retorna TokenResponse]
+    C -- Sim --> E[Captura WebApplicationException]
+    E --> F[Lança AuthenticationException]
+    F --> G[AuthExceptionMapper]
+    G --> H[HTTP 401 + mensagem]
+```
 
